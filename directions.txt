@@ -1,0 +1,398 @@
+GIT basics
+
+git init
+inside a folder to start tracking everything inside the folder
+
+git status
+
+git add [filename]
+stage the file
+
+git commit -m ""
+commit the file from staging to repository with custom message inside ""
+git commit -am ""
+direct commit from working area to repository
+
+git log 
+see log of commits
+git log -n
+git log --author=""
+git log --since="2012-03-03"
+git log --until=""
+git log --oneline
+
+
+
+differences:
+git diff [filename]
+gives differences in changes in working area
+
+git diff --staged
+differences in staging area
+
+git diff --color-words
+
+Delete file from repository
+1)git rm [filename]
+git commit
+2)directly delete file in working area
+git rm [filename]
+git commit
+
+RENAME and MOVING:
+RENAMING
+1)directly rename
+git add [renamed file]
+git rm [file before renaming]
+commit
+2)git mv [filename] [rename file]
+commit
+
+MOVING
+git mv [filename] [dir\filename]
+
+UNDO
+git checkout -- [filename]
+get the file in repository to working area and merge- used to undo the changes done in working area to revert back
+
+git reset HEAD [staged filename]
+undo staging
+
+AMENDING COMMITS:
+git add [filename]
+git commit --amend -m ""
+
+getting old versions from repository
+git checkout [SHA of the version] -- [filename]
+note: it will also be added to staging area
+
+git revert [SHA of the HEAD version]
+change the msg 
+does the complete opposite of the previous commit
+
+GIT REMOTE
+showing remotes
+git remote
+git remote -v
+
+adding remote directory
+git remote add [shortname] [url]
+git remote rm [shortname]
+remove a repository
+
+git log [remote branch]
+Ex: git log origin/master
+
+Difference
+git diff origin/master..master
+
+Branch
+git branch
+git branch -r
+remote git branches
+git branch -a
+all git branches local+remote
+
+git branch [name]
+creates a branch on local
+git push origin non-tracking
+pushes to remote non-tracking branch
+
+git branch [local-branch name] [remote branch name]
+git branch non-tracking origin/non-tracking
+OR
+git checkout -b non-tracking origin/non-tracking
+creates the remote branch on local - nontracking brach on local
+git branch -d [local-branch name]
+delete a local branch
+
+git push [remote name] --delete [remote branch name]
+git push origin --delete non-tracking
+delete a remote branch
+
+Switching branches
+git checkout [branch name]
+git checkout master
+
+CLONING:
+git clone [url] [foldername]
+to get a 3rd party readonly repository
+
+FETCH from remote
+git fetch [remote-name]
+git fetch origin
+it doesn't reflect on local machine - just cache's updates from online origin
+it doesn’t automatically merge it with any of your work or modify what you’re currently working on.
+
+MERGE
+git merge [remotename/branch]
+Ex: git merge origin/master
+
+PULL from remote
+git pull [remote-name]
+PULL = FETCH + MERGE
+git pull generally fetches data from the server you originally cloned from and automatically tries to merge it into the code you’re currently working on.
+
+
+Pushing to remote
+git push [remote-name] [branch-name]
+Ex: git push -u origin master
+Push the local repository to remote
+-u is to set to track the branch
+git push
+if in tracking directory
+
+
+ROS
+check environment variables
+export | grep ROS
+
+access to ros commands
+source /opt/ros/groovy/setup.bash
+
+create a workspace 
+rosws init [where you want the workspace] [/opt/ros/groovy]
+Ex: rosws init ~/groovy_workspace /opt/ros/groovy
+
+create a sandbox directory for new packages
+mkdir ~/groovy_workspace/sandbox
+rosws set ~/groovy_workspace/sandbox
+
+source ~/groovy_workspace/setup.bash
+Every time the entries in the workspace change, it is necessary to re-source to make sure that the updated ROS_PACKAGE_PATH is used. 
+
+check environment variables to verify
+
+//some commands rospack, rosstack, roscd, rosls
+
+
+Creating a PACKAGE
+roscreate-pkg [package_name]
+roscreate-pkg [package_name] [depend1] [depend2] [depend3]	w/ dependencies
+Ex: roscreate-pkg beginner_tutorials std_msgs rospy roscpp
+
+call "rospack profile" after making changes to your path so that new directories will be found
+if fails - problem with ROS_PACKAGE_PATH
+
+check dependencies of new package
+rospack depends1 [package name]
+(should be same as given early when creating packages)
+
+check all dependencies (indirect also)
+rospack depends [package name]
+
+Build PACKAGE
+rosmake [package name]
+can build multiple packages at once
+rosmake [package1] [package2] [package3]
+
+Nodes: A node is an executable that uses ROS to communicate with other nodes.
+Messages: ROS data type used when subscribing or publishing to a topic.
+Topics: Nodes can publish messages to a topic as well as subscribe to a topic to receive messages.
+Master: Name service for ROS (i.e. helps nodes find each other)
+rosout: ROS equivalent of stdout/stderr
+roscore: Master + rosout + parameter server (parameter server will be introduced later) 
+
+roscore
+first thing to run in ROS
+
+ROSNODE
+rosnode list
+-all nodes presently running
+
+rosnode info /[node name]
+information about node - publications, subscriptions, services
+
+rosrun [package name] [node name]
+rosrun [package name] [node name] __name:=[new node name]
+reassign names to nodes
+
+rosnode ping [node name]
+check whether node is running
+
+ROSTOPIC
+rostopic bw     display bandwidth used by topic
+rostopic echo   print messages to screen
+rostopic hz     display publishing rate of topic    
+rostopic list   print information about active topics
+rostopic pub    publish data to topic
+rostopic type   print topic type
+
+Ex:rostopic echo [topic]
+
+rostopic list -v
+This displays a verbose list of topics to publish to and subscribe to and their type.
+
+rostopic type [topic]
+
+rostopic pub [topic] [msg_type] [args]
+rostopic pub -1 /turtle1/command_velocity turtlesim/Velocity  -- 2.0  1.8
+-1  single topic publish
+-- tells the option parser that none of the following arguments is an option.
+
+rostopic pub /turtle1/command_velocity turtlesim/Velocity -r 1 -- 2.0  -1.8
+1 Hz frequency publishing
+-r streaming commands
+
+rostopic hz [topic]
+find rate of publishing
+
+ROSMSG:
+rosmsg show [message type]
+rosmsg show turtlesim/Velocity
+type of message
+
+ROS SERVICE:
+rosservice list         print information about active services
+rosservice call         call the service with the provided args
+rosservice type         print service type
+rosservice find         find services by service type
+rosservice uri          print service ROSRPC uri
+
+rosservice list
+lists all the running services
+
+rosservice type [service name]
+rosservice type clear
+std_srvs/Empty
+-doesn't take any arguments
+
+rosservice call [service name] [args]
+rosservice call clear
+
+rosservice type spawn| rossrv show
+rosservice call spawn 2 2 0.2 ""
+map with type of service associated with spawn
+
+ROSPARAM:
+rosparam set            set parameter
+rosparam get            get parameter
+rosparam load           load parameters from file
+rosparam dump           dump parameters to file
+rosparam delete         delete parameter
+rosparam list           list parameter names
+
+rosparam list
+lists all the parameters on the param server
+
+rosparam set [param_name]
+rosparam get [param_name]
+rosparam set background_r 150
+rosservice call clear
+call clear for the changes to take effect
+
+rosparam get background_g
+rosparam get /
+shows the entire contents of all the params in the parameter server
+
+rosparam dump [file name]
+rosparam load [file name][namespace]
+rosparam dump params.yaml
+
+rosparam load params.yaml copy
+loads the parameters and stores in a variable copy
+rosparam get copy/background_b
+
+ROSLAUNCH:
+roslaunch [package] [filename.launch]
+starts nodes as defined in a launch file. 
+roslaunch beginner_tutorials turtlemimic.launch
+
+ROSED
+ros editor
+rosed [package_name] [filename]
+rosed roscpp logger.msg
+
+export EDITOR='emacs -nw'
+setting editor
+
+
+ROS MSG and SRV:
+msg: msg files are simple text files that describe the fields of a ROS message. They are used to generate source code for messages in different languages.
+srv: an srv file describes a service. It is composed of two parts: a request and a response.
+
+msg files are stored in the msg directory of a package, and srv files are stored in the srv directory.
+
+msgs are just simple text files with a field type and field name per line. The field types you can use are:
+
+    int8, int16, int32, int64 (plus uint*)
+    float32, float64
+    string
+    time, duration
+    other msg files
+    variable-length array[] and fixed-length array[C]  
+
+srv files are just like msg files, except they contain two parts: a request and a response. The two parts are separated by a '---' line.
+
+ROSMSG
+echo "int64 num" > msg/Num.msg
+Open CMakeLists.txt
+uncomment: # rosbuild_genmsg()
+
+rosmsg show [message type]
+rosmsg show Num
+
+ROS COPY
+roscp [package_name] [file_to_copy_path] [copy_path]
+roscp rospy_tutorials AddTwoInts.srv srv/AddTwoInts.srv
+
+ROS SRV
+rossrv show [service type]
+rossrv show beginner_tutorials/AddTwoInts
+
+int64 a
+int64 b
+---
+int64 sum
+
+CMakeLists.txt
+uncomment: # rosbuild_gensrv()
+ROSMAKE
+rosmake [package_name]
+rosmake beginner_tutorials
+
+Nodes -> src directory
+Publishing node
+Subscribing node
+
+CMakeLists.txt
+rosbuild_add_executable(talker src/talker.cpp)
+rosbuild_add_executable(listener src/listener.cpp)
+make
+
+rosrun beginner_tutorials talker   
+rosrun beginner_tutorials listener
+
+SERVICE:
+make sure of .srv file in srv folder
+
+CMakeLists
+rosbuild_add_executable(add_two_ints_server src/add_two_ints_server.cpp)
+rosbuild_add_executable(add_two_ints_client src/add_two_ints_client.cpp)
+make
+
+rosrun beginner_tutorials add_two_ints_server
+rosrun beginner_tutorials add_two_ints_client 1 3
+
+
+cmake_minimum_required (VERSION 2.6)
+project (Tutorial)
+include_directories("${CMAKE_SOURCE_DIR}/sub")
+set(LIBSRC sub/first.cpp)
+add_library(sub ${LIBSRC})
+add_executable(hello test.cpp)
+target_link_libraries(hello sub)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
