@@ -1,0 +1,17 @@
+<package>
+  <description brief="learning_tf">
+
+     learning_tf
+
+  </description>
+  <author>Prashanth G S</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/learning_tf</url>
+  <depend package="tf"/>
+  <depend package="roscpp"/>
+  <depend package="turtlesim"/>
+
+</package>
+
+
